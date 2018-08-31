@@ -1,0 +1,47 @@
+import cv2
+import numpy as np
+import webcolors
+cap = cv2.VideoCapture(0)
+cond = int(input("Room conditions : bright/dark(0/1)  : "))
+coloR = input("Enter color name to track : ")
+red, green , blue = webcolors.name_to_rgb(coloR)
+
+
+color = np.uint8([[[blue, green, red]]])
+print(color)
+hsv_color = cv2.cvtColor(color, cv2.COLOR_BGR2HSV)
+print(hsv_color)
+hue = hsv_color[0][0][0]
+
+# If room is bright, light reflection should allow for lighter shades of the same color
+# For dark conditions , allow for darker shades.
+if cond == 0:
+    lower_end = np.array([hue - 10,100,100])
+    upper_end = np.array([hue + 10,255,255])
+else:
+    lower_end = np.array([hue - 10, 30,30])
+    upper_end = np.array([hue + 10, 255 , 255])
+
+while (1):
+    _, frame = cap.read()
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    mask = cv2.inRange(hsv, lower_end, upper_end)
+    res = cv2.bitwise_and(frame, frame, mask=mask)
+
+    kernel = np.ones((15 , 15), np.uint8)
+
+    closing = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    closing = cv2.bitwise_and(frame,frame, mask = closing)
+
+    cv2.imshow('frame', frame)
+    #cv2.imshow('mask', mask)
+    #cv2.imshow('res', res)
+    cv2.imshow('closing',closing)
+
+    k = cv2.waitKey(5) & 0xFF
+    if k == 27:
+        break
+
+cv2.destroyAllWindows()
+cap.release()
