@@ -16,8 +16,8 @@ hue = hsv_color[0][0][0]
 # If room is bright, light reflection should allow for lighter shades of the same color
 # For dark conditions , allow for darker shades.
 if cond == 0:
-    lower_end = np.array([hue - 10,100,100])
-    upper_end = np.array([hue + 10,255,255])
+    lower_end = np.array([hue - 11,100,100])
+    upper_end = np.array([hue + 11,255,255])
 else:
     lower_end = np.array([hue - 10, 30,30])
     upper_end = np.array([hue + 10, 255 , 255])
